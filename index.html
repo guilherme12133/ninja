@@ -320,6 +320,8 @@
           <option>16:00</option>
           <option>17:00</option>
           <option>18:00</option>
+          <option>19:00</option>
+          <option>20:00</option>
         </select>
 
         <p class="preco" style="margin-top: 20px">
@@ -343,97 +345,93 @@
   </footer>
 
   <script>
-    // Data mínima: hoje.
+   <script>
+    const CHAVE_PIX = "685228b9-9424-470c-8a90-bb16bf2afd8d";
+
+    document.getElementById("formAgendamento").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("nome").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const data = document.getElementById("data").value;
+      const horario = document.getElementById("horario").value;
+
+      // MOSTRA O PIX NA TELA
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = `
+        <h2 style="color:#d6ad60">Pagamento Pix</h2>
+        <p>Cliente: ${nome} | ${telefone} | ${data} às ${horario}</p>
+        <p style="margin-top:15px">Pague R$ 20,00 usando a chave abaixo:</p>
+        <input id="chave-pix" value="${CHAVE_PIX}" readonly style="width:100%;padding:13px;background:#292929;color:white;border:1px solid #444;border-radius:8px;margin-top:12px">
+        <button type="button" id="btnCopiarPix" style="width:100%;background:#d6ad60;color:#111;padding:15px;border:none;border-radius:8px;margin-top:12px;font-weight:bold">Copiar chave Pix</button>
+        <p style="margin-top:12px;color:#d6ad60;font-size:13px">Confira o destinatário no banco antes de pagar.</p>
+        <button type="button" id="btnCopiarLink" style="width:100%;background:transparent;border:1px solid #d6ad60;color:#d6ad60;padding:12px;border-radius:8px;margin-top:12px">Copiar link do site</button>
+      `;
+
+      // BOTÃO COPIAR PIX
+      document.getElementById("btnCopiarPix").onclick = async () => {
+        await navigator.clipboard.writeText(CHAVE_PIX);
+        document.getElementById("btnCopiarPix").innerText = "Chave copiada! ✓";
+      };
+
+      // BOTÃO COPIAR LINK DO SITE
+      document.getElementById("btnCopiarLink").onclick = async () => {
+        await navigator.clipboard.writeText(window.location.href);
+        document.getElementById("btnCopiarLink").innerText = "Link copiado! ✓";
+      };
+
+      resultado.scrollIntoView({behavior:"smooth"});
+
+      // ABRE WHATSAPP DEPOIS DE 1 SEGUNDO
+      const whatsappHudson = "5581973197063";
+      const mensagem = `NOVO AGENDAMENTO - Navalha Ninja - Cliente: ${nome} - Data: ${data} ${horario}`;
+      const linkWhatsApp = `https://wa.me/${whatsappHudson}?text=${encodeURIComponent(mensagem)}`;
+      
+      setTimeout(() => {
+        window.open(linkWhatsApp, "_blank");
+      }, 1000);
+    });
+</script><script>
     const campoData = document.getElementById("data");
     const hoje = new Date();
+    campoData.min = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
 
-    const ano = hoje.getFullYear();
-    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-    const dia = String(hoje.getDate()).padStart(2, "0");
+    const CHAVE_PIX = "685228b9-9424-470c-8a90-bb16bf2afd8d";
 
-    campoData.min = `${ano}-${mes}-${dia}`;
+    document.getElementById("formAgendamento").addEventListener("submit", function(e){
+      e.preventDefault();
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const data = document.getElementById("data").value;
+      const horario = document.getElementById("horario").value;
 
-    
-const CHAVE_PIX = "685228b9-9424-470c-8a90-bb16bf2afd8d";
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = `
+        <h2 style="color:#d6ad60;margin-top:10px">Pagamento Pix</h2>
+        <p>Cliente: ${nome} | ${data} as ${horario}</p>
+        <input id="chave-pix" value="${CHAVE_PIX}" readonly style="width:100%;padding:13px;margin-top:12px;background:#292929;color:#fff;border:1px solid #444;border-radius:8px">
+        <button type="button" id="btnPix" style="width:100%;margin-top:12px;background:#d6ad60;padding:15px;border-radius:8px;font-weight:bold;border:none">Copiar chave Pix</button>
+        <p style="margin-top:12px;color:#d6ad60;font-size:13px">Cole essa chave no app do seu banco para pagar R$ 20,00</p>
+        <button type="button" id="btnLink" style="width:100%;margin-top:12px;background:transparent;border:1px solid #d6ad60;color:#d6ad60;padding:12px;border-radius:8px">Copiar link do site</button>
+      `;
 
-document.getElementById("formAgendamento")
-  .addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const nome = document.getElementById("nome").value.trim();
-    const telefone = document.getElementById("telefone").value.trim();
-    const data = document.getElementById("data").value;
-    const horario = document.getElementById("horario").value;
-
-const whatsappHudson = "5581973197063";
-
-const mensagem =
-  `NOVO AGENDAMENTO - Navalha Ninja\n\n` +
-  `Cliente: ${nome}\n` +
-  `WhatsApp: ${telefone}\n` +
-  `Serviço: Corte degradê\n` +
-  `Valor: R$ 20,00\n` +
-  `Data: ${data}\n` +
-  `Horário: ${horario}\n` +
-  `Pix: aguardando confirmação`;
-
-const linkWhatsApp =
-  `https://wa.me/${whatsappHudson}?text=${encodeURIComponent(mensagem)}`;
-
-    const resultado = document.getElementById("resultado");
-    resultado.replaceChildren();
-
-    const titulo = document.createElement("h2");
-    titulo.textContent = "Pagamento Pix";
-
-    const detalhes = document.createElement("p");
-    detalhes.textContent =
-      `Cliente: ${nome} | WhatsApp: ${telefone} | ` +
-      `Barbeiro: Hudson Kilven | Corte degradê | ` +
-      `Data: ${data} às ${horario} | Total: R$ 20,00`;
-
-    const instrucoes = document.createElement("p");
-    instrucoes.style.marginTop = "15px";
-    instrucoes.textContent =
-      "Pague R$ 20,00 pelo aplicativo do seu banco usando a chave Pix abaixo.";
-
-    const chave = document.createElement("input");
-    chave.value = CHAVE_PIX;
-    chave.readOnly = true;
-    chave.style.marginTop = "12px";
-
-    const copiar = document.createElement("button");
-    copiar.type = "button";
-    copiar.textContent = "Copiar chave Pix";
-
-    copiar.addEventListener("click", async function() {
-      try {
+      document.getElementById("btnPix").onclick = async () => {
         await navigator.clipboard.writeText(CHAVE_PIX);
-        copiar.textContent = "Chave copiada!";
-      } catch {
-        chave.focus();
-        chave.select();
-        copiar.textContent = "Selecione e copie a chave";
-      }
+        document.getElementById("btnPix").innerText = "Copiado! ✓";
+      };
+      document.getElementById("btnLink").onclick = async () => {
+        await navigator.clipboard.writeText(window.location.href);
+        document.getElementById("btnLink").innerText = "Link copiado! ✓";
+      };
+
+      resultado.scrollIntoView({behavior:"smooth"});
+
+      setTimeout(()=>{
+        const msg = `NOVO AGENDAMENTO - Navalha Ninja - Cliente: ${nome} - ${data} ${horario}`;
+        window.open(`https://wa.me/5581973197063?text=${encodeURIComponent(msg)}`,"_blank");
+      },1000);
     });
-
-    const aviso = document.createElement("p");
-    aviso.style.marginTop = "12px";
-    aviso.style.color = "#d6ad60";
-    aviso.textContent =
-      "Confira o destinatário no banco antes de pagar. " +
-      "O pagamento não é confirmado automaticamente por este site.";
-
-    resultado.append(
-      titulo, detalhes, instrucoes, chave, copiar, aviso
-    );
-
-    resultado.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  });
-window.open(linkWhatsApp, "_blank");
+</script>
   </script>
   
 
